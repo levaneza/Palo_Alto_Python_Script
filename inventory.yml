@@ -17,10 +17,24 @@ objects:
       value: 203.0.113.10
       description: Web server 1
       tags: [Prod, Web]
+    - name: web-srv-2
+      type: ip-netmask
+      value: 203.0.1.1
+      description: Web server 2
+      tags: [Prod, Web]
+    - name: web-srv-3
+      type: ip-netmask
+      value: 203.0.3.3
+      description: Web server 3
+      tags: [Prod, Web]
 
   address_groups:
     - name: web-servers
-      static_members: [web-srv-1]
+      static_members: [web-srv-2, web-srv-3]
+      description: All web servers
+      tags: [Prod, Web]
+    - name: web-servers_2
+      static_members: [web-srv-1, web-srv-3]
       description: All web servers
       tags: [Prod, Web]
 
@@ -43,6 +57,21 @@ policies:
       from_zones: [Trust]
       to_zones: [Untrust]
       source_addresses: [web-servers]
+      destination_addresses: [any]
+      applications: [ssl, web-browsing]
+      services: [application-default]
+      users: [any]
+      tags: [Prod]
+      action: allow
+      log_setting: default
+      log_start: false
+      log_end: true
+      disabled: false
+    - name: allow-prod-web-out-222
+      description: Allow outbound web from Prod servers 222
+      from_zones: [Trust]
+      to_zones: [Untrust]
+      source_addresses: [web-srv-2]
       destination_addresses: [any]
       applications: [ssl, web-browsing]
       services: [application-default]
