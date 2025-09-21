@@ -1,0 +1,55 @@
+devices:
+  - name: pa-fw-1
+    host: 172.24.24.1
+    vsys: vsys1
+    verify_ssl: false
+
+objects:
+  tags:
+    - name: Prod
+      color: 5
+      comments: Production
+    - name: Web
+
+  addresses:
+    - name: web-srv-1
+      type: ip-netmask
+      value: 203.0.113.10
+      description: Web server 1
+      tags: [Prod, Web]
+
+  address_groups:
+    - name: web-servers
+      static_members: [web-srv-1]
+      description: All web servers
+      tags: [Prod, Web]
+
+  services:
+    - name: svc-https
+      protocol: tcp
+      ports: "443"
+      description: HTTPS
+      tags: [Web]
+
+  service_groups:
+    - name: web-services
+      members: [svc-https]
+      description: Web-related services
+
+policies:
+  security:
+    - name: allow-prod-web-out
+      description: Allow outbound web from Prod servers
+      from_zones: [Trust]
+      to_zones: [Untrust]
+      source_addresses: [web-servers]
+      destination_addresses: [any]
+      applications: [ssl, web-browsing]
+      services: [application-default]
+      users: [any]
+      tags: [Prod]
+      action: allow
+      log_setting: default
+      log_start: false
+      log_end: true
+      disabled: false
