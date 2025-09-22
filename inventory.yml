@@ -1,6 +1,6 @@
 devices:
   - name: pa-fw-1
-    host: 172.24.24.1
+    host: IP_Address
     vsys: vsys1
     verify_ssl: false
 
